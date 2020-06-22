@@ -1,0 +1,18 @@
+{
+  "name": "camunda-cloud-starter-node",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/dotenv": "^8.2.0",
+    "dotenv": "^8.2.0",
+    "got": "^11.3.0",
+    "zeebe-node": "^0.23.3"
+  }
+}
