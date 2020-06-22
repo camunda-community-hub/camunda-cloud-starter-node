@@ -1,31 +1,34 @@
 # Getting Started with Camunda Cloud and Node.js
 
-Video tutorial here: [https://youtu.be/AOj64vzEZ_8](https://youtu.be/AOj64vzEZ_8)
+The [Zeebe Node Client](https://github.com/creditsenseau/zeebe-client-node-js) exists for Node.js applications. 
+
+Watch a [video tutorial on YouTube](https://youtu.be/AOj64vzEZ_8) walking through this Getting Started Guide.
+
+[![](assets/getting-started-node-thumbnail.jpg)](https://youtu.be/AOj64vzEZ_8)
 
 ## Prerequisites
 
 * [Node.js](https://nodejs.org)
 * [Zeebe Modeler](https://github.com/zeebe-io/zeebe-modeler/releases)
 
-## Table of Contents
-_Note: Available as clickable links in the [YouTube video](https://youtu.be/AOj64vzEZ_8)_
-
 ## Scaffolding the project
 
 * Install tools:
 
 ```bash
-npm i -g pnpm typescript ts-node
+npm i -g typescript ts-node
 ```
+[Video link](https://youtu.be/AOj64vzEZ_8?t=30)
 
 * Create project:
 
 ```bash
-mkdir camunda-cloud-get-started
-cd camunda-cloud-get-started
+mkdir camunda-cloud-get-started-node
+cd camunda-cloud-get-started-node
 npm init -y
 tsc --init
 ```
+[Video link](https://youtu.be/AOj64vzEZ_8?t=95)
 
 * Edit `tsconfig.json` with the following config:
 
@@ -44,14 +47,17 @@ tsc --init
   }
 }
 ```
+[Video link](https://youtu.be/AOj64vzEZ_8?t=155)
 
 * Install `zeebe-node` and `dotenv`:
 
 ```
-pnpm i zeebe-node dotenv
+npm i zeebe-node dotenv
 ```
 
 ## Create Camunda Cloud cluster
+
+[Video link](https://youtu.be/AOj64vzEZ_8?t=198)
 
 * Log in to [https://camunda.io](https://camunda.io).
 * Create a new Zeebe 0.23.3 cluster.
@@ -59,6 +65,8 @@ pnpm i zeebe-node dotenv
 * Copy the client Connection Info environment variables block.
 
 ## Configure connection
+
+[Video link](https://youtu.be/AOj64vzEZ_8?t=454)
 
 * Create a file `.env` in the root of the project
 * Paste the client connection environment variable block 
@@ -76,6 +84,8 @@ ZEEBE_AUTHORIZATION_SERVER_URL='https://login.cloud.camunda.io/oauth/token'
 * Save the file.
 
 ## Test Connection with Camunda Cloud 
+
+[Video link](https://youtu.be/AOj64vzEZ_8?t=370)
 
 We will connect to the Zeebe cluster in Camunda Cloud, and request its topology.
 
@@ -119,6 +129,8 @@ You will see output like this:
 
 ## Create a BPMN model
 
+[Video link](https://youtu.be/AOj64vzEZ_8?t=753)
+
 * Download and install the [Zeebe Modeler](https://github.com/zeebe-io/zeebe-modeler/releases).
 * Open Zeebe Modeler and create a new BPMN Diagram.
 * Create a new BPMN diagram.
@@ -135,6 +147,8 @@ It should look like this:
 
 ## Deploy the BPMN model to Camunda Cloud
 
+[Video Link](https://youtu.be/AOj64vzEZ_8?t=908)
+
 * Edit the `src/app.ts` file, to be this:
 
 ```typescript
@@ -144,8 +158,8 @@ require("dotenv").config();
 
 async function main() {
   const zbc = new ZBClient();
-  const file = path.join(__dirname, "..", "bpmn", "test-process");
-  const res = await zbc.deployWorkflow(file);
+  const filename = path.join(__dirname, "..", "bpmn", "test-process");
+  const res = await zbc.deployWorkflow(filename);
   console.log(res);
 }
 
@@ -174,6 +188,8 @@ You will see output similar to this:
 The workflow is now deployed to the cluster.
 
 ## Start a Workflow Instance
+
+[Video Link](https://youtu.be/AOj64vzEZ_8?t=1037)
 
 * Edit the `src/app.ts` file, and make it look like this:
 
@@ -212,6 +228,8 @@ A workflow instance has been started. Let's view it in Operate.
 
 ## View a Workflow Instance in Operate
 
+[Video Link](https://youtu.be/AOj64vzEZ_8?t=1137)
+
 * Go to your cluster in the [Camunda Cloud Console](https://camunda.io).
 * In the cluster detail view, click on "_View Workflow Instances in Camunda Operate_".
 * In the "_Instances by Workflow_" column, click on "_Test Process - 1 Instance in 1 Version_".
@@ -221,6 +239,8 @@ A workflow instance has been started. Let's view it in Operate.
 Let's create a task worker to serve the job represented by this task.
 
 ## Create a Job Worker
+
+[Video Link](https://youtu.be/AOj64vzEZ_8?t=1244)
 
 We will create a worker program that logs out the job metadata, and completes the job with success.
 
@@ -305,11 +325,13 @@ You will see your worker log out the job as it serves it, and your program will 
 
 ## Call a REST Service from the Worker 
 
+[Video link](https://youtu.be/AOj64vzEZ_8?t=1426)
+
 * Stop the worker program.
 * Install the `got` package to your project:
 
 ```bash 
-pnpm i got
+npm i got
 ```
 
 * Edit the file `src/worker.ts`, and make it look like this:
@@ -357,6 +379,8 @@ You will see output similar to the following:
 
 ## Make a Decision 
 
+[Video link](https://youtu.be/AOj64vzEZ_8?t=1781)
+
 We will edit the model to add a Conditional Gateway.
 
 * Open the BPMN model file `bpmn/test-process.bpmn` in the Zeebe Modeler.
@@ -382,6 +406,8 @@ It should look like this:
 ![](img/second-model.png) 
 
 ## Create a Worker that acts based on Custom Headers 
+
+[Video link](https://youtu.be/AOj64vzEZ_8?t=2081)
 
 We will create a second worker that takes the custom header and applies it to the variables in the workflow.
 
@@ -442,3 +468,8 @@ You will see output similar to the following:
 06:17:45.039 | zeebe |  INFO: Established encrypted connection to Camunda Cloud.
 Process Instance (Complete) Good Afternoon Josh Wulf
 ```
+
+## Profit!
+
+Congratulations. You've completed the Getting Started Guide for Camunda Cloud using Node.js.
+
