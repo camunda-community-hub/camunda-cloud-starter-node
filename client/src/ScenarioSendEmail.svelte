@@ -25,7 +25,12 @@
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ name, email }),
-    }).then((res) => res.json().then((r) => console.log(r)));
+    }).then((res) =>
+      res.json().then((r) => {
+        console.log(r);
+        alert(JSON.stringify(r, null, 2));
+      })
+    );
   }
 
   async function getSendGridApiKey(): Promise<boolean> {
@@ -58,7 +63,7 @@
       body: JSON.stringify({ senderEmail: newSendGridSenderEmail }),
     }).then(() => {
       snackbar.showSnackbar({
-        props: { text: "Sendgrid Sender Email updated!" },
+        props: { text: "SendGrid Sender Email updated!" },
       });
     });
   }
@@ -72,7 +77,7 @@
       },
       body: JSON.stringify({ key: newSendGridApiKey }),
     }).then(() => {
-      snackbar.showSnackbar({ props: { text: "Sendgrid API key updated!" } });
+      snackbar.showSnackbar({ props: { text: "SendGrid API key updated!" } });
     });
   }
 </script>
@@ -86,7 +91,7 @@
     >
       <div slot="handle">
         <Button on:click={toggle}>
-          Sendgrid API Key
+          SendGrid API Key
           <ChevronDownIcon size="20" class="ml accordion-chevron" />
         </Button>
       </div>
@@ -107,11 +112,11 @@
         {/await}
         {#if newSendGridApiKey}
           <Button outline on:click={setSendGridApiKey}
-            >Update Sendgrid API Key</Button
+            >Update SendGrid API Key</Button
           >
         {:else}
           <Button outline on:click={setSendGridApiKey} disabled
-            >Update Sendgrid API Key</Button
+            >Update SendGrid API Key</Button
           >
         {/if}
       </Card>
@@ -123,7 +128,7 @@
     >
       <div slot="handle">
         <Button on:click={toggle}>
-          Sendgrid Sender Email
+          SendGrid Sender Email
           <ChevronDownIcon size="20" class="ml accordion-chevron" />
         </Button>
       </div>
@@ -148,11 +153,11 @@
         {/await}
         {#if newSendGridSenderEmail}
           <Button outline on:click={setSendGridSenderEmail}
-            >Update Sendgrid Sender Email</Button
+            >Update SendGrid Sender Email</Button
           >
         {:else}
           <Button outline on:click={setSendGridSenderEmail} disabled
-            >Update Sendgrid Sender Email</Button
+            >Update SendGrid Sender Email</Button
           >
         {/if}
       </Card>

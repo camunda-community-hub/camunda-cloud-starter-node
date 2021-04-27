@@ -20,7 +20,7 @@ This project does not contain best practices for application structure. If you a
 
 ## Setup 
 
-### Clone the project
+## Clone the project
 
 * Clone this repo.
 
@@ -32,14 +32,16 @@ This project does not contain best practices for application structure. If you a
 npm i 
 ```
 
-### Create Camunda Cloud cluster
+## Create Camunda Cloud cluster
 
-* Log in to [https://camunda.io](https://camunda.io).
+If you don't already have one, you will need to create a cluster in Camunda Cloud. The full procedure is documented [here](https://docs.camunda.io/docs/guides/getting-started/create-cluster).
+
+* Log in to [https://console.cloud.camunda.io](https://console.cloud.camunda.io).
 * Create a new Zeebe 1.x.y cluster.
 * When the new cluster appears in the console, create a new set of client credentials. 
 * Download the client credentials `.txt` file.
 
-### Start the project
+## Start the project
 
 * Run the command:
 
@@ -49,17 +51,18 @@ npm start
 
 * Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Configure connection
+This command will install all dependencies and build the front-end and backend, and then run the REST server and Zeebe workers using [`nodemon`](https://nodemon.io/). When you make changes to the configuration of the application, the server component will automatically restart.
+
+## Configure connection
 
 You have two options here - via the Web UI or via the `.env` file. 
 
-#### Option 1: Via Web UI 
+### Option 1: Via Web UI 
 
 * Open [http://localhost:3000](http://localhost:3000) in your browser.
-
 * Upload the client credentials `.txt` for your cluster. 
 
-#### Option 2: Via .env file
+### Option 2: Via `.env` file
 
 * Create a file `.env` in the root of the project
 * Paste the client connection environment variable block 
@@ -105,6 +108,40 @@ It does this by using the `ZBClient.topology()` method in the implementation in 
 
 ## Scenarios
 
-### Send an Email
+## Send an Email
 
-The first scenario sends an email using the SendGrid API. You can get a 
+The first scenario sends an email using the SendGrid API from a Camunda Cloud worker. It demonstrates a transactional email task that uses a template specified in a custom header on the task. A more fully featured implementation can be found in [this blog post](https://camunda.com/blog/2019/10/nestjs-tx-email/).
+
+### Structure
+
+![](img/send-email-model.png)
+
+The model is in [`bpmn/send-welcome-email.bpmn`](/bpmn/send-welcome-email.bpmn). It has a single service task in it. The worker that handles jobs of this type can be found in [`src/sendemail/workers.ts`](/src/sendemail/workers.ts).
+
+The code to deploy the process model and create (start) an instance of the process can be found it [`src/sendmail/process.ts`](/src/sendmail/process.ts).
+
+The REST handler for starting a process instance is in [`src/sendemail/rest.ts`](/src/sendemail/rest.ts).
+
+### Setup
+
+You will need a [SendGrid](https://app.sendgrid.com/) account (you can use the free tier) and an API key.
+
+You have two options to configure the SendGrid API Key and Sender Email - via the Web UI, or via the `.env` file.
+
+### Option 1: Via Web UI 
+
+* Open [http://localhost:3000](http://localhost:3000) in your browser.
+* Click on `SendGrid API Key` and enter your SendGrid API Key, then press `Update SendGrid API Key`.
+* Click on `SendGrid Sender Email` and enter the address that you verified as a sender email in your SendGrid account, then press `Update SendGrid Sender Email`.
+
+### Option 2: Via `.env` file
+
+* Edit the `.env` file and set the values for `SENDGRID_API_KEY` and `SENDGRID_SENDER_EMAIL`.
+
+## Create a process instance
+
+To create a process instance, provide a value for the name of the recipient and their email in your web browser, then press `Create Process Instance`.
+
+This calls the REST route handler in `src/sendemail/rest.ts`, creating a process instance and returning the metadata from the call to Camunda Cloud to the browser, where it is displayed in an alert and in the JS console.
+
+You can then view the process instance in [Operate](https://docs.camunda.io/docs/product-manuals/operate/index), the process monitoring component of Camunda Cloud.
