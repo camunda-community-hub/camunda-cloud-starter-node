@@ -1,21 +1,22 @@
-import { ZBClient } from "zeebe-node";
-import { config } from "dotenv";
-import * as path from "path";
+import { config } from 'dotenv'
+config()
 
-config();
+const { app } = require('./rest/server')
+import * as sendemail from './sendemail'
+import { getZBClient } from './lib/credentials'
 
-async function main() {
-  const zbc = new ZBClient();
-  const filename = path.join(__dirname, "..", "bpmn", "test-process.bpmn");
-  await zbc.deployWorkflow(filename);
-  const res = await zbc.createWorkflowInstanceWithResult({
-    bpmnProcessId: "test-process",
-    variables: {
-      name: "Josh Wulf",
-    },
-    requestTimeout: 60000,
-  });
-  console.log(`Process Completed: ${res.variables.say}`);
+/**
+ * Package.json uses nodemon when started with npm start
+ * This reloads the entire application when the Camunda Cloud credentials are updated
+ * in the .env file.
+ */
+
+const hydratedClient = getZBClient()
+
+if (hydratedClient.exists) {
+  const { zbc, value: { zeebeAddress } } = hydratedClient
+  sendemail.startWorkers(zbc)
+  sendemail.deployProcess(zbc)
+  sendemail.createRestEndpoints({ zbc, zeebeAddress, app })
 }
 
-main();
