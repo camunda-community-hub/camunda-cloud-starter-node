@@ -4,6 +4,7 @@ config()
 const { app } = require('./rest/server')
 import * as sendemail from './sendemail'
 import * as decision from './decision-gateway'
+import * as parallelmulti from './parallel-multi-instance'
 import { getZBClient } from './lib/credentials'
 
 /**
@@ -22,5 +23,8 @@ if (hydratedClient.exists) {
   decision.deployProcess(zbc)
   decision.startWorkers(zbc)
   decision.createRestEndpoints({ app, zbc, zeebeAddress })
+  parallelmulti.deployProcess(zbc)
+  parallelmulti.startWorkers(zbc)
+  parallelmulti.createRestEndpoints({ app, zbc, zeebeAddress })
 }
 

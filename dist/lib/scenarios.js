@@ -17,6 +17,10 @@ exports.scenarios = {
     "Decision Gateway": {
         description: "A decision gateway with multiple pathways",
         bpmnXML: getModel("process-attachment.bpmn"),
+    },
+    "Parallel Multi-instance": {
+        description: "A parallel multi-instance to parallelize work",
+        bpmnXML: getModel("parallel-multi-instance.bpmn")
     }
 };
 exports.scenarioNames = Object.keys(exports.scenarios);

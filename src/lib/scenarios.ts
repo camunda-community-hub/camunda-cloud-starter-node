@@ -19,6 +19,10 @@ export const scenarios: { [key: string]: Scenario } = {
         description: "A decision gateway with multiple pathways",
         bpmnXML: getModel("process-attachment.bpmn"),
 
+    },
+    "Parallel Multi-instance": {
+        description: "A parallel multi-instance to parallelize work",
+        bpmnXML: getModel("parallel-multi-instance.bpmn")
     }
 };
 

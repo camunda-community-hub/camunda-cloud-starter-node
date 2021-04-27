@@ -11,10 +11,12 @@
   import { ChevronDownIcon } from "svelte-feather-icons";
   import ScenarioSendEmail from "./ScenarioSendEmail.svelte";
   import ScenarioDecision from "./ScenarioDecision.svelte";
+  import ScenarioParallelMultiInstance from "./ScenarioParallelMultiInstance.svelte";
 
   const ScenarioComponents = {
     "Send Email": ScenarioSendEmail,
     "Decision Gateway": ScenarioDecision,
+    "Parallel Multi-instance": ScenarioParallelMultiInstance,
   };
 
   async function getClientCredentials() {

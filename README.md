@@ -156,7 +156,6 @@ In this scenario, the process implements a decision gateway with two different p
 
 The model is in [`bpmn/process-attachment.bpmn`](/bpmn/process-attachment.bpmn). The model uses a decision gateway BPMN symbol, with a [FEEL expression](https://docs.camunda.io/docs/product-manuals/concepts/expressions) as the condition on one of the branches (the other branch is set as the default flow).
 
-
 The model has two service tasks in it, one on each pathway after the decision gateway. These workers can be found in [`src/decision-gateway/workers.ts`](/src/decision-gateway/workers.ts).
 
 The code to deploy the process model and create (start) an instance of the process can be found it [`src/decision-gateway/process.ts`](/src/decision-gateway/process.ts). This uses the `createProcessInstanceWithResult` method, which awaits the eventual outcome of the process.
@@ -168,3 +167,21 @@ The REST handler for starting a process instance is in [`src/decision-gateway/re
 Either check the checkbox to specify that the process payload has an attachment, or leave it unchecked. Then, press the `Create Process Instance` button. A process instance will run, and the outcome will be displayed in an alert.
 
 The `outcome` field of the `variables` object will contain a message that lets you know which decision pathway was taken, and which worker processed the payload.
+
+## Scenario 3: Parallel multi-instance
+
+In this scenario, we use the [parallel multi-instance](https://docs.camunda.io/docs/reference/bpmn-workflows/multi-instance/multi-instance/) marker on the service task to parallelize CPU-intensive jobs across either workers on different machines, or workers written using the [Node.js cluster module](https://nodejs.org/api/cluster.html) to take advantage of multiple threads.
+
+### Structure 
+
+![](img/parallel-multi-instance.png)
+
+The model can be found in [`bpmn/parallel-multi-instance.bpmn`](/bpmn/parallel-multi-instance.bpmn). The parallel multi-instance configuration uses FEEL expressions to define which collection in the payload to iterate over.
+
+The model has only one service task type in it, but we create three workers in [`src/parallel-multi-instance/workers`](/src/parallel-multi-instance/workers), to simulate parallel resources (whether on distinct instances, or using distinct threads). These workers can grab only one job at a time. Pay attention to the timeout configured by the worker when it activates the job. The job timeout should exceed the maximum amount of time that the worker can take to complete the work.
+
+The code to deploy the process model and start an instance is found in [`src/parallel-multi-instance/process.ts`](/src/parallel-multi-instance/process.ts). Again, timing is everything - the `requestTimeout` of the `createProcessInstanceWithResult` should exceed the maximum amount of time that the parallelized work will take. 
+
+### Create a process instance
+
+Check the boxes to add "files" to the payload. These represent file ids, and in a production system they would be used in the worker to retrieve the actual file contents from a database or file storage. The more you select, the longer it will take - but since there are three parallel workers, the time will increase if you go from three files to four, and from six files to seven.
