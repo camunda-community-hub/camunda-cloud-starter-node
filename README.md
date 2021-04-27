@@ -108,7 +108,7 @@ It does this by using the `ZBClient.topology()` method in the implementation in 
 
 ## Scenarios
 
-## Send an Email
+## Scenario 1: Send an Email
 
 The first scenario sends an email using the SendGrid API from a Camunda Cloud worker. It demonstrates a transactional email task that uses a template specified in a custom header on the task. A more fully featured implementation can be found in [this blog post](https://camunda.com/blog/2019/10/nestjs-tx-email/).
 
@@ -142,6 +142,29 @@ You have two options to configure the SendGrid API Key and Sender Email - via th
 
 To create a process instance, provide a value for the name of the recipient and their email in your web browser, then press `Create Process Instance`.
 
-This calls the REST route handler in `src/sendemail/rest.ts`, creating a process instance and returning the metadata from the call to Camunda Cloud to the browser, where it is displayed in an alert and in the JS console.
+This calls the REST route handler in [`src/sendemail/rest.ts`](/src/sendemail/rest.ts), which creates a process instance and returns the metadata from Camunda Cloud to the browser, where it is displayed in an alert and in the JS console.
 
 You can then view the process instance in [Operate](https://docs.camunda.io/docs/product-manuals/operate/index), the process monitoring component of Camunda Cloud.
+
+## Scenario 2: Implement a Decision Gateway
+
+In this scenario, the process implements a decision gateway with two different pathways through the process. The process outcome is also awaited, so the eventual outcome of the entire process is passed back to the client app by the REST server.
+
+### Structure
+
+![](img/decision-gateway.png)
+
+The model is in [`bpmn/process-attachment.bpmn`](/bpmn/process-attachment.bpmn). The model uses a decision gateway BPMN symbol, with a [FEEL expression](https://docs.camunda.io/docs/product-manuals/concepts/expressions) as the condition on one of the branches (the other branch is set as the default flow).
+
+
+The model has two service tasks in it, one on each pathway after the decision gateway. These workers can be found in [`src/decision-gateway/workers.ts`](/src/decision-gateway/workers.ts).
+
+The code to deploy the process model and create (start) an instance of the process can be found it [`src/decision-gateway/process.ts`](/src/decision-gateway/process.ts). This uses the `createProcessInstanceWithResult` method, which awaits the eventual outcome of the process.
+
+The REST handler for starting a process instance is in [`src/decision-gateway/rest.ts`](/src/decision-gateway/rest.ts).
+
+## Create a process instance
+
+Either check the checkbox to specify that the process payload has an attachment, or leave it unchecked. Then, press the `Create Process Instance` button. A process instance will run, and the outcome will be displayed in an alert.
+
+The `outcome` field of the `variables` object will contain a message that lets you know which decision pathway was taken, and which worker processed the payload.

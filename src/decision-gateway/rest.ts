@@ -3,10 +3,10 @@ import express from 'express'
 import { startProcessInstance } from "./process";
 
 export function createRestEndpoints({ app, zbc, zeebeAddress }: { zbc: ZBClient, app: express.Application, zeebeAddress: string | undefined }) {
-    app.post('/sendemail', async (req, res) => {
+    app.post('/decisionGateway', async (req, res) => {
         console.log(req.body)
-        const { name, email } = req.body
-        const processInstance = await startProcessInstance(zbc, { name, email })
-        res.json(processInstance)
+        const { hasAttachment } = req.body
+        const processInstanceWithResult = await startProcessInstance(zbc, { hasAttachment })
+        res.json(processInstanceWithResult)
     })
 }

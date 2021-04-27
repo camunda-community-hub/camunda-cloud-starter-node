@@ -7,11 +7,16 @@ exports.scenarioNames = exports.scenarios = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 console.log('Location:', __dirname);
+const getModelPath = (filename) => path_1.default.join(__dirname, "..", "..", "bpmn", filename);
+const getModel = (filename) => fs_1.default.readFileSync(getModelPath(filename), "utf-8");
 exports.scenarios = {
     "Send Email": {
         description: "A single worker task that sends an email",
-        bpmnXML: fs_1.default.readFileSync(path_1.default.join(__dirname, "..", "..", "bpmn", "send-welcome-email.bpmn"), "utf-8"),
-        workers: ['send-email']
+        bpmnXML: getModel("send-welcome-email.bpmn"),
+    },
+    "Decision Gateway": {
+        description: "A decision gateway with multiple pathways",
+        bpmnXML: getModel("process-attachment.bpmn"),
     }
 };
 exports.scenarioNames = Object.keys(exports.scenarios);

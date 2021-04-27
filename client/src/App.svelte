@@ -10,9 +10,11 @@
   } from "attractions";
   import { ChevronDownIcon } from "svelte-feather-icons";
   import ScenarioSendEmail from "./ScenarioSendEmail.svelte";
+  import ScenarioDecision from "./ScenarioDecision.svelte";
 
   const ScenarioComponents = {
     "Send Email": ScenarioSendEmail,
+    "Decision Gateway": ScenarioDecision,
   };
 
   async function getClientCredentials() {

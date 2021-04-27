@@ -21,7 +21,7 @@ interface WelcomeEmailHeaders {
 }
 
 export function startWorkers(zbc: ZBClient) {
-    console.log('Starting worker for Basic scenario...')
+    console.log('Starting worker for Send Email scenario...')
     zbc.createWorker<WelcomeEmailPayload, WelcomeEmailHeaders>({
         taskType: 'send-email',
         taskHandler: job => {

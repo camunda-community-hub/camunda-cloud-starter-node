@@ -3,6 +3,7 @@ config()
 
 const { app } = require('./rest/server')
 import * as sendemail from './sendemail'
+import * as decision from './decision-gateway'
 import { getZBClient } from './lib/credentials'
 
 /**
@@ -18,5 +19,8 @@ if (hydratedClient.exists) {
   sendemail.startWorkers(zbc)
   sendemail.deployProcess(zbc)
   sendemail.createRestEndpoints({ zbc, zeebeAddress, app })
+  decision.deployProcess(zbc)
+  decision.startWorkers(zbc)
+  decision.createRestEndpoints({ app, zbc, zeebeAddress })
 }
 

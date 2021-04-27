@@ -18,7 +18,7 @@ const mailGenerator = new Mailgen({
     },
 });
 function startWorkers(zbc) {
-    console.log('Starting worker for Basic scenario...');
+    console.log('Starting worker for Send Email scenario...');
     zbc.createWorker({
         taskType: 'send-email',
         taskHandler: job => {
