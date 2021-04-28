@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_02ykykd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Zeebe Modeler" exporterVersion="0.11.0">
+  <bpmn:process id="parallel-multi-instance" name="Parallel Multi-instance" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="Start">
+      <bpmn:outgoing>Flow_0riidkx</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0riidkx" sourceRef="StartEvent_1" targetRef="Activity_0go0qcl" />
+    <bpmn:endEvent id="Event_1uut77r" name="End">
+      <bpmn:incoming>Flow_1u9dth5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1u9dth5" sourceRef="Activity_0go0qcl" targetRef="Event_1uut77r" />
+    <bpmn:serviceTask id="Activity_0go0qcl" name="Compute Heavy Task">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="compute-heavy" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0riidkx</bpmn:incoming>
+      <bpmn:outgoing>Flow_1u9dth5</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics>
+        <bpmn:extensionElements>
+          <zeebe:loopCharacteristics inputCollection="=files" inputElement="file" outputCollection="processedFiles" outputElement="=processedFile" />
+        </bpmn:extensionElements>
+      </bpmn:multiInstanceLoopCharacteristics>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="parallel-multi-instance">
+      <bpmndi:BPMNEdge id="Flow_0riidkx_di" bpmnElement="Flow_0riidkx">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="310" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1u9dth5_di" bpmnElement="Flow_1u9dth5">
+        <di:waypoint x="410" y="117" />
+        <di:waypoint x="502" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="185" y="142" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1uut77r_di" bpmnElement="Event_1uut77r">
+        <dc:Bounds x="502" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="510" y="142" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1f71ov3_di" bpmnElement="Activity_0go0qcl">
+        <dc:Bounds x="310" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

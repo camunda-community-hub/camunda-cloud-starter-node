@@ -1,72 +1,68 @@
 # Getting Started with Camunda Cloud and Node.js
 
-The [Zeebe Node Client](https://github.com/creditsenseau/zeebe-client-node-js) exists for Node.js applications. 
+This project uses the [Zeebe Node Client](https://github.com/camunda-community-hub/zeebe-client-node-js) to connect to Camunda Cloud. It is designed for Camunda Cloud 1.0.
 
-Watch a [video tutorial on YouTube](https://youtu.be/AOj64vzEZ_8) walking through this Getting Started Guide.
+It demonstrates how to:
 
-[![](assets/getting-started-node-thumbnail.jpg)](https://youtu.be/AOj64vzEZ_8)
+* Create a ZBClient that connects to a Camunda Cloud cluster
+* Deploy a process model to Camunda Cloud
+* Create a process instance in Camunda Cloud
+* Create a worker that services jobs
+* Integrate Camunda Cloud behind a REST front-end
+
+This project does not contain best practices for application structure. If you are looking for a highly opinionated project structure for Node.js, you might consider using the Zeebe NestJS integration and the NestJS framework.
 
 ## Prerequisites
 
 * [Node.js](https://nodejs.org)
+* [Camunda Cloud account](https://camunda.io)
 * [Zeebe Modeler](https://github.com/zeebe-io/zeebe-modeler/releases)
 
-## Scaffolding the project
+## Setup 
 
-* Install tools:
+## Clone the project
+
+* Clone this repo.
+
+* Change directory into the cloned repository.
+
+* Install dependencies in the project:
 
 ```bash
-npm i -g typescript ts-node
-```
-[Video link](https://youtu.be/AOj64vzEZ_8?t=30)
-
-* Create project:
-
-```bash
-mkdir camunda-cloud-get-started-node
-cd camunda-cloud-get-started-node
-npm init -y
-tsc --init
-```
-[Video link](https://youtu.be/AOj64vzEZ_8?t=95)
-
-* Edit `tsconfig.json` with the following config:
-
-```json
-{
-  "compilerOptions": {
-    "target": "es2020",
-    "module": "commonjs",
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "strict": true,
-    "noImplicitAny": false,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
-  }
-}
-```
-[Video link](https://youtu.be/AOj64vzEZ_8?t=155)
-
-* Install `zeebe-node` and `dotenv`:
-
-```
-npm i zeebe-node dotenv
+npm i 
 ```
 
 ## Create Camunda Cloud cluster
 
-[Video link](https://youtu.be/AOj64vzEZ_8?t=198)
+If you don't already have one, you will need to create a cluster in Camunda Cloud. The full procedure is documented [here](https://docs.camunda.io/docs/guides/getting-started/create-cluster).
 
-* Log in to [https://camunda.io](https://camunda.io).
-* Create a new Zeebe 0.23.3 cluster.
+* Log in to [https://console.cloud.camunda.io](https://console.cloud.camunda.io).
+* Create a new Zeebe 1.x.y cluster.
 * When the new cluster appears in the console, create a new set of client credentials. 
-* Copy the client Connection Info environment variables block.
+* Download the client credentials `.txt` file.
+
+## Start the project
+
+* Run the command:
+
+```bash
+npm start
+```
+
+* Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+This command will install all dependencies and build the front-end and backend, and then run the REST server and Zeebe workers using [`nodemon`](https://nodemon.io/). When you make changes to the configuration of the application, the server component will automatically restart.
 
 ## Configure connection
 
-[Video link](https://youtu.be/AOj64vzEZ_8?t=454)
+You have two options here - via the Web UI or via the `.env` file. 
+
+### Option 1: Via Web UI 
+
+* Open [http://localhost:3000](http://localhost:3000) in your browser.
+* Upload the client credentials `.txt` for your cluster. 
+
+### Option 2: Via `.env` file
 
 * Create a file `.env` in the root of the project
 * Paste the client connection environment variable block 
@@ -83,393 +79,135 @@ ZEEBE_AUTHORIZATION_SERVER_URL='https://login.cloud.camunda.io/oauth/token'
 
 * Save the file.
 
+## Project structure
+
+This Getting Started Guide project is structured as:
+
+* A simple JavaScript front-end application written in [Svelte](https://svelte.dev/)
+* A Node.js Express REST API 
+* Camunda Cloud integrations consisting of process models, process model deployment, Zeebe workers, and process instance creation route handlers.
+
+### Front End
+
+The front-end application is in the `client` directory. It uses the [bpmn.io](https://bpmn.io/) BPMN Model Viewer to display the BPMN process models in the browser.
+
+### Node.js REST API 
+
+The server is in the `src/rest/server.ts` file. It has some routes to allow you to configure the application from the front-end, and the Express application is exported to allow Getting Started Scenarios to add route handlers.
+
+### Camunda Cloud integration
+
+The process models are found in the `bpmn` directory.
+
+
 ## Test Connection with Camunda Cloud 
 
-[Video link](https://youtu.be/AOj64vzEZ_8?t=370)
-
-We will connect to the Zeebe cluster in Camunda Cloud, and request its topology.
-
-* In the `src` folder, create a file called `app.ts`.
-* Edit the file, and put in the following code:
-
-```typescript
-import { ZBClient } from "zeebe-node";
-require("dotenv").config();
-
-async function main() {
-  const zbc = new ZBClient();
-  const res = await zbc.topology();
-  console.log(res);
-}
-
-main();
-```
-
-* Run the program with the command: `ts-node src/app.ts`
-
-You will see output like this:
-
-```json
-03:19:46.658 | zeebe |  INFO: Authenticating client with Camunda Cloud...
-03:19:49.998 | zeebe |  INFO: Established encrypted connection to Camunda Cloud.
-{
-  brokers: [
-    {
-      partitions: [Array],
-      nodeId: 0,
-      host: 'zeebe-0.zeebe-broker-service.231bb36a-1588-4f1e-b4f6-e09944d7efd7-zeebe.svc.cluster.local',
-      port: 26501
-    }
-  ],
-  clusterSize: 1,
-  partitionsCount: 1,
-  replicationFactor: 1
-}
-```
-
-## Create a BPMN model
-
-[Video link](https://youtu.be/AOj64vzEZ_8?t=753)
-
-* Download and install the [Zeebe Modeler](https://github.com/zeebe-io/zeebe-modeler/releases).
-* Open Zeebe Modeler and create a new BPMN Diagram.
-* Create a new BPMN diagram.
-* Add a StartEvent, an EndEvent, and a Task.
-* Click on the Task, click on the little spanner/wrench icon, and select "Service Task".
-* Set the _Name_ of the Service Task to `Get Time`, and the _Type_ to `get-time`.
-
-It should look like this:
-
-![](img/first-model.png)
+When the application is configured, the [`camundaCloudClusterConnection`](http://localhost:3000/camundaCloudClusterConnection) endpoint will connect to the Zeebe cluster in Camunda Cloud, and return its topology.
 
-* Click on the blank canvas of the diagram, and set the _Id_ to `test-process`, and the _Name_ to "Test Process".
-* Save the diagram to `bpmn/test-process.bpmn` in your project.
+It does this by using the `ZBClient.topology()` method in the implementation in `src/server.ts`.
 
-## Deploy the BPMN model to Camunda Cloud
+## Scenarios
 
-[Video Link](https://youtu.be/AOj64vzEZ_8?t=908)
+## Scenario 1: Send an Email
 
-* Edit the `src/app.ts` file, to be this:
+The first scenario sends an email using the SendGrid API from a Camunda Cloud worker. It demonstrates a transactional email task that uses a template specified in a custom header on the task. A more fully featured implementation can be found in [this blog post](https://camunda.com/blog/2019/10/nestjs-tx-email/).
 
-```typescript
-import { ZBClient } from "zeebe-node";
-import * as path from "path";
-require("dotenv").config();
+### Structure
 
-async function main() {
-  const zbc = new ZBClient();
-  const filename = path.join(__dirname, "..", "bpmn", "test-process");
-  const res = await zbc.deployWorkflow(filename);
-  console.log(res);
-}
+![](img/send-email-model.png)
 
-main();
-```
-* Run the program with the command: `ts-node src/app.ts`
+The model is in [`bpmn/send-welcome-email.bpmn`](/bpmn/send-welcome-email.bpmn). It has a single service task in it. The worker that handles jobs of this type can be found in [`src/sendemail/workers.ts`](/src/sendemail/workers.ts).
 
-You will see output similar to this: 
+The code to deploy the process model and create (start) an instance of the process can be found it [`src/sendmail/process.ts`](/src/sendmail/process.ts).
 
-```json
-01:37:30.710 | zeebe |  INFO: Authenticating client with Camunda Cloud...
-01:37:36.466 | zeebe |  INFO: Established encrypted connection to Camunda Cloud.
-{
-  workflows: [
-    {
-      bpmnProcessId: 'test-process',
-      version: 1,
-      workflowKey: '2251799813687791',
-      resourceName: 'test-process.bpmn'
-    }
-  ],
-  key: '2251799813688440'
-}
-```
-
-The workflow is now deployed to the cluster.
+The REST handler for starting a process instance is in [`src/sendemail/rest.ts`](/src/sendemail/rest.ts).
 
-## Start a Workflow Instance
+### Setup
 
-[Video Link](https://youtu.be/AOj64vzEZ_8?t=1037)
+You will need a [SendGrid](https://app.sendgrid.com/) account (you can use the free tier) and an API key.
 
-* Edit the `src/app.ts` file, and make it look like this:
+You have two options to configure the SendGrid API Key and Sender Email - via the Web UI, or via the `.env` file.
 
-```typescript
-import { ZBClient } from "zeebe-node";
-import * as path from "path";
-require("dotenv").config();
+### Option 1: Via Web UI 
 
-async function main() {
-  const zbc = new ZBClient();
-  const file = path.join(__dirname, "..", "bpmn", "test-process.bpmn");
-  await zbc.deployWorkflow(file);
-  const res = await zbc.createWorkflowInstance("test-process", {})
-  console.log(res);
-}
+* Open [http://localhost:3000](http://localhost:3000) in your browser.
+* Click on `SendGrid API Key` and enter your SendGrid API Key, then press `Update SendGrid API Key`.
+* Click on `SendGrid Sender Email` and enter the address that you verified as a sender email in your SendGrid account, then press `Update SendGrid Sender Email`.
 
-main();
-```
+### Option 2: Via `.env` file
 
-* Run the program with the command: `ts-node src/app.ts`
+* Edit the `.env` file and set the values for `SENDGRID_API_KEY` and `SENDGRID_SENDER_EMAIL`.
 
-You will see output similar to: 
+## Create a process instance
 
-```json
-02:00:20.689 | zeebe |  INFO: Authenticating client with Camunda Cloud...
-02:00:23.769 | zeebe |  INFO: Established encrypted connection to Camunda Cloud.
-{
-  workflowKey: '2251799813687791',
-  bpmnProcessId: 'test-process',
-  version: 1,
-  workflowInstanceKey: '2251799813688442'
-}
-```
+To create a process instance, provide a value for the name of the recipient and their email in your web browser, then press `Create Process Instance`.
 
-A workflow instance has been started. Let's view it in Operate.
+This calls the REST route handler in [`src/sendemail/rest.ts`](/src/sendemail/rest.ts), which creates a process instance and returns the metadata from Camunda Cloud to the browser, where it is displayed in an alert and in the JS console.
 
-## View a Workflow Instance in Operate
+You can then view the process instance in [Operate](https://docs.camunda.io/docs/product-manuals/operate/index), the process monitoring component of Camunda Cloud.
 
-[Video Link](https://youtu.be/AOj64vzEZ_8?t=1137)
+## Scenario 2: Implement a Decision Gateway
 
-* Go to your cluster in the [Camunda Cloud Console](https://camunda.io).
-* In the cluster detail view, click on "_View Workflow Instances in Camunda Operate_".
-* In the "_Instances by Workflow_" column, click on "_Test Process - 1 Instance in 1 Version_".
-* Click the Instance Id to open the instance.
-* You will see the token is stopped at the "_Get Time_" task.
+In this scenario, the process implements a decision gateway with two different pathways through the process. The process outcome is also awaited, so the eventual outcome of the entire process is passed back to the client app by the REST server.
 
-Let's create a task worker to serve the job represented by this task.
+### Structure
 
-## Create a Job Worker
+![](img/decision-gateway.png)
 
-[Video Link](https://youtu.be/AOj64vzEZ_8?t=1244)
+The model is in [`bpmn/process-attachment.bpmn`](/bpmn/process-attachment.bpmn). The model uses a decision gateway BPMN symbol, with a [FEEL expression](https://docs.camunda.io/docs/product-manuals/concepts/expressions) as the condition on one of the branches (the other branch is set as the default flow).
 
-We will create a worker program that logs out the job metadata, and completes the job with success.
+The model has two service tasks in it, one on each pathway after the decision gateway. These workers can be found in [`src/decision-gateway/workers.ts`](/src/decision-gateway/workers.ts).
 
-* Create a new file `src/worker.ts`.
-* Edit the file to look like this:
+The code to deploy the process model and create (start) an instance of the process can be found it [`src/decision-gateway/process.ts`](/src/decision-gateway/process.ts). This uses the `createProcessInstanceWithResult` method, which awaits the eventual outcome of the process.
 
-```typescript
-import { ZBClient } from "zeebe-node";
-require("dotenv").config();
+The REST handler for starting a process instance is in [`src/decision-gateway/rest.ts`](/src/decision-gateway/rest.ts).
 
-const zbc = new ZBClient();
-const worker = zbc.createWorker("get-time", (job, complete) => {
-  console.log(job);
-  complete.success();
-})
-```
+## Create a process instance
 
-* Run the worker program with the command: `ts-node src/worker.ts`.
+Either check the checkbox to specify that the process payload has an attachment, or leave it unchecked. Then, press the `Create Process Instance` button. A process instance will run, and the outcome will be displayed in an alert.
 
-You will see output similar to: 
+The `outcome` field of the `variables` object will contain a message that lets you know which decision pathway was taken, and which worker processed the payload.
 
-```json
-{
-  key: '2251799813688447',
-  type: 'get-time',
-  workflowInstanceKey: '2251799813688442',
-  bpmnProcessId: 'test-process',
-  workflowDefinitionVersion: 1,
-  workflowKey: '2251799813687791',
-  elementId: 'Activity_18gdgop',
-  elementInstanceKey: '2251799813688446',
-  customHeaders: {},
-  worker: 'get-time',
-  retries: 3,
-  deadline: '1592750237366',
-  variables: {}
-}
-```
-
-* Go back to Operate. You will see that the workflow instance is gone.
-* Click on "Running Instances".
-* In the filter on the left, select "_Finished Instances_".
+## Scenario 3: Parallel multi-instance
 
-You will see the completed workflow instance.
+In this scenario, we use the [parallel multi-instance](https://docs.camunda.io/docs/reference/bpmn-workflows/multi-instance/multi-instance/) marker on the service task to parallelize CPU-intensive jobs across either workers on different machines, or workers written using the [Node.js cluster module](https://nodejs.org/api/cluster.html) to take advantage of multiple threads.
 
-## Create and Await the Outcome of a Workflow Instance 
-
-We will now create the workflow instance, and get the final outcome in the calling code.
-
-* Keep the worker program running in one terminal.
-* Edit the `src/app.ts` file, and make it look like this:
-
-```typescript
-import { ZBClient } from "zeebe-node";
-import * as path from "path";
-require("dotenv").config();
-
-async function main() {
-  const zbc = new ZBClient();
-  const file = path.join(__dirname, "..", "bpmn", "test-process.bpmn");
-  await zbc.deployWorkflow(file);
-  const res = await zbc.createWorkflowInstanceWithResult("test-process", {})
-  console.log(res);
-}
+### Structure 
 
-main();
-```
+![](img/parallel-multi-instance.png)
 
-* Run the program with the command: `ts-node src/app.ts`.
+The model can be found in [`bpmn/parallel-multi-instance.bpmn`](/bpmn/parallel-multi-instance.bpmn). The parallel multi-instance configuration uses FEEL expressions to define which collection in the payload to iterate over.
 
-You will see your worker log out the job as it serves it, and your program will produce output similar to the following:
+The model has only one service task type in it, but we create three workers in [`src/parallel-multi-instance/workers`](/src/parallel-multi-instance/workers), to simulate parallel resources (whether on distinct instances, or using distinct threads). These workers can grab only one job at a time. Pay attention to the timeout configured by the worker when it activates the job. The job timeout should exceed the maximum amount of time that the worker can take to complete the work.
 
-```json
-{
-  workflowKey: '2251799813688541',
-  bpmnProcessId: 'test-process',
-  version: 1,
-  workflowInstanceKey: '2251799813688543',
-  variables: {}
-}
-```
+The code to deploy the process model and start an instance is found in [`src/parallel-multi-instance/process.ts`](/src/parallel-multi-instance/process.ts). Again, timing is everything - the `requestTimeout` of the `createProcessInstanceWithResult` should exceed the maximum amount of time that the parallelized work will take. 
 
-## Call a REST Service from the Worker 
+### Create a process instance
 
-[Video link](https://youtu.be/AOj64vzEZ_8?t=1426)
+Check the boxes to add "files" to the payload. These represent file ids, and in a production system they would be used in the worker to retrieve the actual file contents from a database or file storage. The more you select, the longer it will take - but since there are three parallel workers, the time will increase if you go from three files to four, and from six files to seven.
 
-* Stop the worker program.
-* Install the `got` package to your project:
+## Scenario 4: Rollback Compensation
 
-```bash 
-npm i got
-```
+In this scenario, we use the BPMN boundary error event to allow a worker to signal a business failure as distinct from a technical failure. In this case, the business failure is something like "Charge to customer declined due to lack of funds" versus a technical failure like "Cannot connect to Payment Processor API".
 
-* Edit the file `src/worker.ts`, and make it look like this:
+A technical failure will raise an incident and halt execution of the process until the failure is remediated, at which point the process can be restarted from Operate. A business failure, however, should result in a different path being taken in the process. 
 
-```typescript
-import { ZBClient } from "zeebe-node";
-import got from "got";
-require("dotenv").config();
+In this case, if the charge is declined, the order is cancelled. If the charge is successful but the product cannot be shipped (maybe it has gone out of stock during the process) then the charge to the customer is reversed, and the order cancelled.
 
-const zbc = new ZBClient();
+This pattern is described in [this forum post](https://forum.camunda.io/t/how-can-i-model-compensation-rollback/2168).
 
-const url = "https://json-api.joshwulf.com/time";
+### Structure 
 
-const worker = zbc.createWorker("get-time", async (job, complete) => {
-  const time = await got(url).json();
-  console.log(time);
-  complete.success({time});
-});
-```
-
-* Run the worker program with the command: `ts-node src/worker.ts`
-* In another terminal, run the program with the command: `ts-node src/app.ts`
-
-You will see output similar to the following:
-
-```json
-{
-  workflowKey: '2251799813688541',
-  bpmnProcessId: 'test-process',
-  version: 1,
-  workflowInstanceKey: '2251799813688598',
-  variables: {
-    time: {
-      time: 'Sun, 21 Jun 2020 15:08:22 GMT',
-      hour: 15,
-      minute: 8,
-      second: 22,
-      day: 0,
-      month: 5,
-      year: 2020
-    }
-  }
-}
-```
+![](img/rollback.png)
 
-## Make a Decision 
+The model is in [`bpmn/rollback.bpmn`](/bpmn/rollback.bpmn). The model uses the boundary error BPMN symbol, allowing a worker to signal a business error.
 
-[Video link](https://youtu.be/AOj64vzEZ_8?t=1781)
+The workers are in [`src/rollback/workers`](/src/rollback/workers). 
 
-We will edit the model to add a Conditional Gateway.
+The code to deploy the process model and start an instance is found in [`src/rollback/process.ts`](/src/rollback/process.ts). 
 
-* Open the BPMN model file `bpmn/test-process.bpmn` in the Zeebe Modeler.
-* Drop a Gateway between the Service Task and the End event.
-* Add two Service Tasks after the Gateway.
-* In one, set the _Name_ to `Before noon` and the _Type_ to `make-greeting`.
-* Switch to the _Headers_ tab on that Task, and create a new Key `greeting` with the Value `Good morning`.
-* In the second, set the _Name_ to `After noon` and the _Type_ to `make-greeting`.
-* Switch to the _Headers_ tab on that Task, and create a new Key `greeting` with the Value `Good afternoon`.
-* Click on the arrow connecting the Gateway to the _Before noon_ task.
-* Under _Details_ enter the following in _Condition expression_: 
+## Create a process instance
 
-```
-=time.hour >=0 and time.hour <=12
-```
+Specify whether the charge and shipping should fail or succeed. Provide a price for the product, then press the `Create Process Instance` button. A process instance will run, and the outcome will be displayed in an alert.
 
-* Click on the arrow connecting the Gateway to the _After noon_ task. 
-* Click the spanner/wrench icon and select "Default Flow".
-* Connect both Service Tasks to the End Event.
-
-It should look like this:
-
-![](img/second-model.png) 
-
-## Create a Worker that acts based on Custom Headers 
-
-[Video link](https://youtu.be/AOj64vzEZ_8?t=2081)
-
-We will create a second worker that takes the custom header and applies it to the variables in the workflow.
-
-* Stop the worker running.
-* Edit the file `src/worker.ts`, and make it look like this:
-
-```typescript
-import { ZBClient } from "zeebe-node";
-import got from "got";
-require("dotenv").config();
-
-const zbc = new ZBClient();
-
-const url = "https://json-api.joshwulf.com/time";
-
-const worker = zbc.createWorker("get-time", async (job, complete) => {
-  const time = await got(url).json();
-  console.log(time);
-  complete.success({time});
-});
-
-const greetingWorker = zbc.createWorker("make-greeting", (job, complete) => {
-  const { name } = job.variables;
-  const { greeting } = job.customHeaders;
-  complete.success({
-    say: `${greeting} ${name}`,
-  });
-});
-```
-
-* Edit the file `src/app.ts`, and make it look like this:
-
-```typescript
-import { ZBClient } from "zeebe-node";
-import * as path from "path";
-require("dotenv").config();
-
-async function main() {
-  const zbc = new ZBClient();
-  const file = path.join(__dirname, "..", "bpmn", "test-process.bpmn");
-  await zbc.deployWorkflow(file);
-  const res = await zbc.createWorkflowInstanceWithResult("test-process", {
-    name: "Josh Wulf"
-  })
-  console.log("Process Instance (Complete)", res.variables.say);
-}
-
-main();
-```
-
-* Start the workers with the command: `ts-node src/worker.ts`
-* Start the app with the command: `ts-node src/app.ts`
-
-You will see output similar to the following:
-
-```
-06:17:42.273 | zeebe |  INFO: Authenticating client with Camunda Cloud...
-06:17:45.039 | zeebe |  INFO: Established encrypted connection to Camunda Cloud.
-Process Instance (Complete) Good Afternoon Josh Wulf
-```
-
-## Profit!
-
-Congratulations. You've completed the Getting Started Guide for Camunda Cloud using Node.js.
-
+The `outcome` field of the `variables` object will contain a message that lets you know how much the customer was ultimately charged, and whether or not the product was shipped. If you watch the console of the server process, you will see the worker performing the compensation in the case where the payment succeeds and the shipping fails.
