@@ -25,6 +25,7 @@ const { app } = require('./rest/server');
 const sendemail = __importStar(require("./sendemail"));
 const decision = __importStar(require("./decision-gateway"));
 const parallelmulti = __importStar(require("./parallel-multi-instance"));
+const rollback = __importStar(require("./rollback"));
 const credentials_1 = require("./lib/credentials");
 /**
  * Package.json uses nodemon when started with npm start
@@ -43,4 +44,7 @@ if (hydratedClient.exists) {
     parallelmulti.deployProcess(zbc);
     parallelmulti.startWorkers(zbc);
     parallelmulti.createRestEndpoints({ app, zbc, zeebeAddress });
+    rollback.deployProcess(zbc);
+    rollback.startWorkers(zbc);
+    rollback.createRestEndpoints({ app, zbc, zeebeAddress });
 }

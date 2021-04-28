@@ -23,6 +23,10 @@ export const scenarios: { [key: string]: Scenario } = {
     "Parallel Multi-instance": {
         description: "A parallel multi-instance to parallelize work",
         bpmnXML: getModel("parallel-multi-instance.bpmn")
+    },
+    "Rollback Compensation": {
+        description: "Modeling rollback compensation with BPMN boundary error events",
+        bpmnXML: getModel("rollback.bpmn")
     }
 };
 

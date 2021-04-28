@@ -1,6 +1,6 @@
 # Getting Started with Camunda Cloud and Node.js
 
-This project uses the [Zeebe Node Client](https://github.com/camunda-community-hub/zeebe-client-node-js) to connect to Camunda Cloud.
+This project uses the [Zeebe Node Client](https://github.com/camunda-community-hub/zeebe-client-node-js) to connect to Camunda Cloud. It is designed for Camunda Cloud 1.0.
 
 It demonstrates how to:
 
@@ -185,3 +185,29 @@ The code to deploy the process model and start an instance is found in [`src/par
 ### Create a process instance
 
 Check the boxes to add "files" to the payload. These represent file ids, and in a production system they would be used in the worker to retrieve the actual file contents from a database or file storage. The more you select, the longer it will take - but since there are three parallel workers, the time will increase if you go from three files to four, and from six files to seven.
+
+## Scenario 4: Rollback Compensation
+
+In this scenario, we use the BPMN boundary error event to allow a worker to signal a business failure as distinct from a technical failure. In this case, the business failure is something like "Charge to customer declined due to lack of funds" versus a technical failure like "Cannot connect to Payment Processor API".
+
+A technical failure will raise an incident and halt execution of the process until the failure is remediated, at which point the process can be restarted from Operate. A business failure, however, should result in a different path being taken in the process. 
+
+In this case, if the charge is declined, the order is cancelled. If the charge is successful but the product cannot be shipped (maybe it has gone out of stock during the process) then the charge to the customer is reversed, and the order cancelled.
+
+This pattern is described in [this forum post](https://forum.camunda.io/t/how-can-i-model-compensation-rollback/2168).
+
+### Structure 
+
+![](img/rollback.png)
+
+The model is in [`bpmn/rollback.bpmn`](/bpmn/rollback.bpmn). The model uses the boundary error BPMN symbol, allowing a worker to signal a business error.
+
+The workers are in [`src/rollback/workers`](/src/rollback/workers). 
+
+The code to deploy the process model and start an instance is found in [`src/rollback/process.ts`](/src/rollback/process.ts). 
+
+## Create a process instance
+
+Specify whether the charge and shipping should fail or succeed. Provide a price for the product, then press the `Create Process Instance` button. A process instance will run, and the outcome will be displayed in an alert.
+
+The `outcome` field of the `variables` object will contain a message that lets you know how much the customer was ultimately charged, and whether or not the product was shipped. If you watch the console of the server process, you will see the worker performing the compensation in the case where the payment succeeds and the shipping fails.

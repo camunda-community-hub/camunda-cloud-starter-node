@@ -12,11 +12,13 @@
   import ScenarioSendEmail from "./ScenarioSendEmail.svelte";
   import ScenarioDecision from "./ScenarioDecision.svelte";
   import ScenarioParallelMultiInstance from "./ScenarioParallelMultiInstance.svelte";
+  import ScenarioRollback from "./ScenarioRollback.svelte";
 
   const ScenarioComponents = {
     "Send Email": ScenarioSendEmail,
     "Decision Gateway": ScenarioDecision,
     "Parallel Multi-instance": ScenarioParallelMultiInstance,
+    "Rollback Compensation": ScenarioRollback,
   };
 
   async function getClientCredentials() {
